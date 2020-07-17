@@ -56,13 +56,14 @@ int main(int argc, char* argv[])
         return 1;
     }
 
-    // get length of file:
+    // get length of input file:
     pcInFile.seekg(0, pcInFile.end);
     int length = (int)pcInFile.tellg();
     pcInFile.seekg(0, pcInFile.beg);
 
     int numValues = length / sizeof(float);
- 
+
+    // Read data into buffer vector of floats
     std::vector<float> buffer(numValues);
     pcInFile.read(reinterpret_cast<char *>(&buffer[0]), numValues*sizeof(float));
     pcInFile.close();
