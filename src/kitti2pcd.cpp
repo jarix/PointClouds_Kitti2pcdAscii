@@ -1,7 +1,7 @@
 /*-------------------------------------------------------------------*\
 
   NAME
-    kitti2pcd_asc
+    kitti2pcd
 
 
   DESCRIPTION
@@ -44,6 +44,7 @@ enum OperModeE
 };
 
 static OperModeE operMode = CONVERT_SINGLE_FILE;
+static uint outputPrecision = 6;
 
 
 /*---------------------------------------------------------------*\
@@ -109,7 +110,7 @@ int writePcdFile(std::string outFileName, std::vector<PointT> &pointCloudVector,
     pcOutFile << "HEIGHT 1" << std::endl;
     pcOutFile << "POINTS " << pointCloudVector.size() << std::endl;
     pcOutFile << "DATA ASCII" << std::endl;
-    pcOutFile << std::setprecision(6);
+    pcOutFile << std::setprecision(outputPrecision);
     // Write points
     for (uint32_t i = 0; i < pointCloudVector.size(); i++) {
         pcOutFile << pointCloudVector[i].x << " " << pointCloudVector[i].y << " " << pointCloudVector[i].z << " " << pointCloudVector[i].i << std::endl;
@@ -136,6 +137,7 @@ int main(int argc, char* argv[])
     po::options_description optsDesc("Optional Parameters");
 
     optsDesc.add_options()
+        ("precision,p", po::value<unsigned int>()->default_value(6),"Floating point precision for outputted values, default = 6") 
         ("help,h","Print this help message");
 
     std::string srcPath;
@@ -175,6 +177,11 @@ int main(int argc, char* argv[])
         std::cerr << poe.what() << "\n" << "USAGE: " << argv[0] << "\n" << optsDesc << std::endl;
         
         return EXIT_FAILURE;
+    }
+
+    if (vm.count("precision")) {
+        outputPrecision = vm["precision"].as<unsigned int>();
+        std::cout << "Setting output precision to " << outputPrecision << std::endl;
     }
 
     // Check if 'srcPath' paramater is a file or a directory
